@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
-use gusapi\GusApi;
-use gusapi\ReportType;
-use gusapi\exception\GusException;
+use GusApi\GusApi;
+use GusApi\ReportTypes;
+use GusApi\Exception\InvalidUserKeyException;
+use GusApi\Exception\NotFoundException;
+use Exception;
+
 
 class GUSApiService
 {
@@ -26,7 +29,7 @@ class GUSApiService
             }
 
             $company = $companies[0];
-            $report = $this->client->getFullReport($company, ReportType::REPORT_CEIDG);
+            $report = $this->client->getFullReport($company, ReportTypes::REPORT_PERSON_CEIDG);
 
             return [
                 'name' => $company->getName(),
@@ -36,8 +39,12 @@ class GUSApiService
                 'zip' => $company->getZipCode(),
                 'report' => $report,
             ];
-        } catch (GusException $e) {
-            return 'Błąd: ' . $e->getMessage();
+        } catch (InvalidUserKeyException $e) {
+            return 'Błąd: nieprawidłowy klucz użytkownika — ' . $e->getMessage();
+        } catch (NotFoundException $e) {
+            return 'Brak danych: ' . $e->getMessage();
+        } catch (Exception $e) {
+            return 'Wystąpił błąd: ' . $e->getMessage();
         }
     }
 }
