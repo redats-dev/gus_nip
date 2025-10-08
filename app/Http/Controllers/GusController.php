@@ -16,7 +16,7 @@ class GusController extends Controller
 
     public function show(string $nip)
     {
-        if (!preg_match('/^\d{10}$/', $nip)) {
+        if (is_null($nip) || !preg_match('/^\d{10}$/', $nip)) {
             return response()->json(['error' => 'Nieprawidłowy NIP'], 400);
         }
 
