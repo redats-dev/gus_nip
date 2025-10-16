@@ -23,13 +23,13 @@ class GusController extends Controller
         $result = $this->gus->getCompanyByNip($nip);
 
         if (is_string($result)) {
-            return response()->json(['error' => $result], 500);
+            return response()->json(['error' => $result], 404);
         }
 
         if (is_null($result)) {
             return response()->json(['message' => 'Brak danych'], 404);
         }
 
-        return response()->json($result);
+        return response()->json($result, 200);
     }
 }

@@ -27,9 +27,9 @@ class GUSApiService
             if (empty($companies)) {
                 return null;
             }
-
+           
             $company = $companies[0];
-            $report = $this->client->getFullReport($company, ReportTypes::REPORT_PERSON_CEIDG);
+            // $report = $this->client->getFullReport($company, ReportTypes::REPORT_PERSON_CEIDG);
 
             return [
                 'name' => $company->getName(),
@@ -37,13 +37,16 @@ class GUSApiService
                 'city' => $company->getCity(),
                 'street' => $company->getStreet(),
                 'zip' => $company->getZipCode(),
-                'report' => $report,
+                // 'report' => $report,
             ];
         } catch (InvalidUserKeyException $e) {
+            report($e);
             return 'Błąd: nieprawidłowy klucz użytkownika — ' . $e->getMessage();
         } catch (NotFoundException $e) {
-            return 'Brak danych: ' . $e->getMessage();
+            report($e);
+            return 'Nie znaleziono ';
         } catch (Exception $e) {
+            report($e);
             return 'Wystąpił błąd: ' . $e->getMessage();
         }
     }

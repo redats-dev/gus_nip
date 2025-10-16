@@ -1,0 +1,9 @@
+{
+  "https": {
+    "cert": "./ssl-cert/cert.crt",
+    "key": "./ssl-cert/key.key"
+  },
+  "port": 8080,
+  "open": false,
+  "host": "localhost"
+}
