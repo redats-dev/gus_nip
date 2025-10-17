@@ -27,7 +27,7 @@ class GusController extends Controller
         }
 
         if (is_null($result)) {
-            return response()->json(['message' => 'Brak danych'], 404);
+            return response()->json(['message' => 'Brak danych'], 200);
         }
 
         return response()->json($result, 200);

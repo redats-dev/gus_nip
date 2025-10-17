@@ -14,7 +14,9 @@
   </head>
   <body>
     <h1>GUS APP</h1>
-<form >
+
+    <div class="container mt-5">
+<form id="GUS_form" class="" novalidate>
   <div class="mb-3">
     <label for="nazwaFirmy" class="form-label">Nazwa firmy</label>
     <input type="text" class="form-control" id="nazwaFirmy" aria-describedby="emailHelp">
@@ -22,6 +24,11 @@
   <div class="mb-3">
     <label for="nip" class="form-label">NIP</label>
     <input type="text" class="form-control" id="nip">
+     <div class="invalid-feedback">
+        NIP jest wymagany i musi mieć co najmniej 10 znaków.
+      </div>
+
+      
   </div>
     <div class="mb-3">
     <label for="city" class="form-label">Miasto</label>
@@ -35,57 +42,61 @@
     <label for="zip" class="form-label">Kod pocztowy</label>
     <input type="text" class="form-control" id="zip">
   </div>
- 
-  
 </form> 
-<button  class="btn btn-primary" onclick="getData()">Pobierz dane</button>
+</div>
+<button type="button" class="btn btn-primary" onclick="getData()">Pobierz dane z GUS</button>
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script>
-   function getData(event){
-        
-    const nip = document.getElementById('nip').value.trim();
+async function getData() {
+  const nipInput = document.getElementById('nip');
+  const nip = nipInput.value.trim();
+
+  // Wstępna walidacja na froncie
   if (nip === "") {
     alert("Wprowadź NIP");
     return;
   }
-    if (nip.length !== 10 || !/^\d+$/.test(nip)) {
+
+  if (!/^\d{10}$/.test(nip)) {
     alert("Wprowadź poprawny 10-cyfrowy NIP");
     return;
   }
 
-  // Budujesz URL z NIP-em
   const url = `http://gus_nip.test/gus/${encodeURIComponent(nip)}`;
-console.log(url);
 
-   fetch(url)
-    .then(response => {
-    if (!response.ok) throw Error(response.statusText);
-    return response.json();
-  })
-    .then(data => {
-  if (!data || Object.keys(data).length === 0) {
-    alert("Nie znaleziono danych dla podanego NIP-u");
-    return;
-  }
+  try {
+    const response = await fetch(url);
+    const data = await response.json(); // próbujemy odczytać JSON nawet przy błędach
 
-  console.log("Odebrane dane:", data);
-
-  // // Przypisanie danych do formularza
-  document.getElementById('nazwaFirmy').value = data.name || "";
-  document.getElementById('street').value = data.street || "";
-  document.getElementById('city').value = data.city || "";
-  document.getElementById('zip').value = data.zip || "";
-
-})
-
-   .catch(err => {
-  console.error("Błąd fetch:", err);
-  alert("Błąd pobierania danych: " + err.message);
-});
+    if (!response.ok) {
+      // Backend zwrócił błąd, np. 400 lub 404
+      if (response.status == 400) {
+        console.warn("Backend odrzucił NIP: " + data.error)
+        return;
+      }
+      throw new Error(data.error || 'Wystąpił nieznany błąd');
     }
+
+    // Backend zwrócił 200, ale np. brak danych
+    if (!data || Object.keys(data).length === 0) {
+      alert("Nie znaleziono danych dla podanego NIP-u");
+      return;
+    }
+
+    // Wszystko OK – przypisujemy dane do formularza
+    document.getElementById('nazwaFirmy').value = data.name || "";
+    document.getElementById('street').value = data.street || "";
+    document.getElementById('city').value = data.city || "";
+    document.getElementById('zip').value = data.zip || "";
+
+  } catch (error) {
+    console.error("Błąd:", error);
+    alert(error.message); // np. "Nieprawidłowy NIP"
+  }
+}
 </script>
     <!-- Option 2: Separate Popper and Bootstrap JS -->
     <!--

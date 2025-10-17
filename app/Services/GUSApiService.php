@@ -29,22 +29,21 @@ class GUSApiService
             }
            
             $company = $companies[0];
-            // $report = $this->client->getFullReport($company, ReportTypes::REPORT_PERSON_CEIDG);
-
+            
             return [
                 'name' => $company->getName(),
                 'regon' => $company->getRegon(),
                 'city' => $company->getCity(),
                 'street' => $company->getStreet(),
                 'zip' => $company->getZipCode(),
-                // 'report' => $report,
+                
             ];
         } catch (InvalidUserKeyException $e) {
             report($e);
             return 'Błąd: nieprawidłowy klucz użytkownika — ' . $e->getMessage();
         } catch (NotFoundException $e) {
             report($e);
-            return 'Nie znaleziono ';
+            return 'Nie znaleziono podanego NIP-u';
         } catch (Exception $e) {
             report($e);
             return 'Wystąpił błąd: ' . $e->getMessage();

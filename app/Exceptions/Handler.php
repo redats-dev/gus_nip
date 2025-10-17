@@ -15,7 +15,10 @@ class Handler extends ExceptionHandler
     protected $dontReport = [
         //
     ];
-
+protected $middleware = [
+    // ...
+    \Fruitcake\Cors\HandleCors::class,
+];
     /**
      * A list of the inputs that are never flashed for validation exceptions.
      *
